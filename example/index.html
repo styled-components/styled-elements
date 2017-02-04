@@ -1,0 +1,41 @@
+<html>
+  <body>
+    <script type="text/javascript" src="../dist/styled-elements.js"></script>
+    <script type="text/javascript">
+      var styled = styled.default;
+
+      var Header = styled.h2`
+        color: #333;
+        margin-top: 0px;
+      `;
+
+      var MyButton = styled.button`
+        padding: 10px;
+        border: 3px solid red;
+        border-radius: ${3}px;
+        background: #lightred;
+        cursor: pointer;
+
+        &:hover {
+          background: #555;
+        }
+      `;
+
+      var Wrapper = styled.div`
+        font-family: Arial;
+        padding: 20px;
+        width: 500px;
+
+        @media (min-width: 400px) {
+          width: 100%;
+          background: #F1F1F1;
+        }
+      `;
+
+      document.body.appendChild(Wrapper()(
+        Header()('Hello'),
+        MyButton({ onclick: function() { console.log('Hello'); } })('Something')
+      ));
+    </script>
+  </body>
+</html>

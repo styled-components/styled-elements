@@ -2,6 +2,13 @@
 node_modules
 coverage
 lib
+!src/lib/hash.hs
+!src/lib
+!./src/lib
+!./src/lib/hash.js
+!*src/lib*
+!src/lib/*/
+!./src/lib/*
 
 # Cruft
 .DS_Store

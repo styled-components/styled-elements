@@ -2,19 +2,19 @@
 
 <div>
   <!-- Dependency Status -->
-  <a href="https://david-dm.org/ethjs/styled-elements">
-    <img src="https://david-dm.org/ethjs/styled-elements.svg"
+  <a href="https://david-dm.org/SilentCicero/styled-elements">
+    <img src="https://david-dm.org/SilentCicero/styled-elements.svg"
     alt="Dependency Status" />
   </a>
 
   <!-- devDependency Status -->
-  <a href="https://david-dm.org/ethjs/styled-elements#info=devDependencies">
-    <img src="https://david-dm.org/ethjs/styled-elements/dev-status.svg" alt="devDependency Status" />
+  <a href="https://david-dm.org/SilentCicero/styled-elements#info=devDependencies">
+    <img src="https://david-dm.org/SilentCicero/styled-elements/dev-status.svg" alt="devDependency Status" />
   </a>
 
   <!-- Build Status -->
-  <a href="https://travis-ci.org/ethjs/styled-elements">
-    <img src="https://travis-ci.org/ethjs/styled-elements.svg"
+  <a href="https://travis-ci.org/SilentCicero/styled-elements">
+    <img src="https://travis-ci.org/SilentCicero/styled-elements.svg"
     alt="Build Status" />
   </a>
 
@@ -25,8 +25,8 @@
   </a>
 
   <!-- Test Coverage
-  <a href="https://coveralls.io/r/ethjs/styled-elements">
-    <img src="https://coveralls.io/repos/github/ethjs/styled-elements/badge.svg" alt="Test Coverage" />
+  <a href="https://coveralls.io/r/SilentCicero/styled-elements">
+    <img src="https://coveralls.io/repos/github/SilentCicero/styled-elements/badge.svg" alt="Test Coverage" />
   </a>
   -->
 
@@ -168,7 +168,7 @@ You'll find more detailed information on using `styled-elements` and tailoring i
 
 There is always a lot of work to do, and will have many rules to maintain. So please help out in any way that you can:
 
-- Create, enhance, and debug ethjs rules (see our guide to ["Working on rules"](./github/CONTRIBUTING.md)).
+- Create, enhance, and debug SilentCicero rules (see our guide to ["Working on rules"](./github/CONTRIBUTING.md)).
 - Improve documentation.
 - Chime in on any open issue or pull request.
 - Open new issues about your ideas for making `styled-elements` better, and pull requests to show us how your idea works.
@@ -178,13 +178,13 @@ There is always a lot of work to do, and will have many rules to maintain. So pl
 
 Please consult our [Code of Conduct](CODE_OF_CONDUCT.md) docs before helping out.
 
-We communicate via [issues](https://github.com/ethjs/styled-elements/issues) and [pull requests](https://github.com/ethjs/styled-elements/pulls).
+We communicate via [issues](https://github.com/SilentCicero/styled-elements/issues) and [pull requests](https://github.com/SilentCicero/styled-elements/pulls).
 
 ## Important documents
 
 - [Changelog](CHANGELOG.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
-- [License](https://raw.githubusercontent.com/ethjs/styled-elements/master/LICENSE)
+- [License](https://raw.githubusercontent.com/SilentCicero/styled-elements/master/LICENSE)
 
 ## Todo
 

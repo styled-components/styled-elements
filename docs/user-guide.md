@@ -60,3 +60,24 @@ document.body.appendChild(Header({}, props)(
   'My Header'
 ));
 ```
+
+## Webpack Figures
+
+```
+Hash: 8efed1ec19981ccaae60
+Version: webpack 2.1.0-beta.15
+Time: 123ms
+                 Asset     Size  Chunks             Chunk Names
+    styled-elements.js  10.2 kB       0  [emitted]  main
+styled-elements.js.map  12.2 kB       0  [emitted]  main
+   [0] ./lib/lib/hash.js 1.25 kB {0} [built]
+   [1] ./lib/index.js 6.33 kB {0} [built]
+
+Hash: 25b157aaa47b12a4dcca
+Version: webpack 2.1.0-beta.15
+Time: 304ms
+                 Asset     Size  Chunks             Chunk Names
+styled-elements.min.js  4.54 kB       0  [emitted]  main
+   [0] ./lib/lib/hash.js 1.25 kB {0} [built]
+   [1] ./lib/index.js 6.33 kB {0} [built]
+```

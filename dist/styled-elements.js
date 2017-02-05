@@ -152,13 +152,6 @@ var _hash = __webpack_require__(0);
 
 var docCSS = {};
 
-var styleEl = document.createElement('style'); // eslint-disable-line
-styleEl.type = 'text/css';
-styleEl.id = 'styles';
-
-document.head.insertBefore( // eslint-disable-line
-styleEl, document.head.firstChild);
-
 function joinTemplate(strings, keys, state) {
   var output = '';
 
@@ -256,6 +249,15 @@ function buildCSS(className, rawCSS) {
 function buildAndRenderCSS(strings, keys, state) {
   var rawCSS = joinTemplate(strings, keys, state);
   var hash = (0, _hash.doHash)(rawCSS).toString(36);
+
+  if (document.querySelector('#styles') === null) {
+    var styleEl = document.createElement('style'); // eslint-disable-line
+    styleEl.type = 'text/css';
+    styleEl.id = 'styles';
+
+    document.head.insertBefore( // eslint-disable-line
+    styleEl, document.head.firstChild);
+  }
 
   if (!docCSS[hash]) {
     docCSS[hash] = buildCSS(hash, rawCSS);

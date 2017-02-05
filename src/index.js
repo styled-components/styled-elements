@@ -2,15 +2,6 @@ import { doHash } from './lib/hash';
 
 const docCSS = {};
 
-const styleEl = document.createElement('style'); // eslint-disable-line
-styleEl.type = 'text/css';
-styleEl.id = 'styles';
-
-document.head.insertBefore( // eslint-disable-line
-  styleEl,
-  document.head.firstChild, // eslint-disable-line
-);
-
 function joinTemplate(strings, keys, state) {
   let output = '';
 
@@ -111,6 +102,17 @@ function buildCSS(className, rawCSS) {
 function buildAndRenderCSS(strings, keys, state) {
   const rawCSS = joinTemplate(strings, keys, state);
   const hash = doHash(rawCSS).toString(36);
+
+  if (document.querySelector('#styles') === null) {
+    const styleEl = document.createElement('style'); // eslint-disable-line
+    styleEl.type = 'text/css';
+    styleEl.id = 'styles';
+
+    document.head.insertBefore( // eslint-disable-line
+      styleEl,
+      document.head.firstChild, // eslint-disable-line
+    );
+  }
 
   if (!docCSS[hash]) {
     docCSS[hash] = buildCSS(hash, rawCSS);

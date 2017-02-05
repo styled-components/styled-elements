@@ -85,22 +85,21 @@ document.body.appendChild(Wrapper()(
 
 ## Features
 
-  - super tiny **1.9kb** gzipped
-  - completely DOM based
-  - supports `@media`
-  - supports pseudo CSS (i.e. `&:hover`)
-  - state can be fed in through primitive methods (i.e `props => ...`)
-  - no dependencies
-  - ES5 compliant, written in ES6
+  - Super tiny **1.9kb** gzipped
+  - Completely DOM based
+  - Supports `@media`
+  - Supports pseudo CSS (i.e. `&:hover`)
+  - State can be fed in through primitive methods (i.e `props => ...`)
+  - No dependencies
   - Uses template literals and real CSS
   - Supports all DOM elements
   - Auto CSS class injection/management
 
 ## About
 
-I loved `styled-components` and needed a DOM equivalent for a project. This is the result. It functions almost the same with pseudo and media queries supported. As well dynamic props can be fed in through primitive functions.
+I love `styled-components` and needed a DOM equivalent for a project. This is the result. It functions almost the same with pseudo and media queries supported. Dynamic props can be fed in through primitive functions; the output of each is a function where props can be fed in, which then returns another function where child elements and strings can be fed in.
 
-A special thanks to [Max Stoiber](https://twitter.com/mxstbr) and the styled-components team for coming up with a great component API for mixing CSS and JS.
+A special thanks to [Max Stoiber](https://twitter.com/mxstbr) and the `styled-components` team for coming up with a great component API for mixing CSS and JS.
 
 ## Usage with Props
 
@@ -149,6 +148,10 @@ document.body.appendChild(Wrapper()(
   </div>`,
 ));
 ```
+
+## Distribution
+
+Grab the UMD distributions in the `/dist` folder.
 
 ## Contributing
 

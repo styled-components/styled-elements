@@ -79,7 +79,7 @@ document.body.appendChild(Wrapper()(
   Header()('My header!'),
   MyButton({ onclick: () => console.log('yay!') })(
     'Do Something'
-  ),
+  )
 ));
 ```
 

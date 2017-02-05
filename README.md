@@ -94,6 +94,7 @@ document.body.appendChild(Wrapper()(
   - Uses template literals and real CSS
   - Supports all DOM elements
   - Auto CSS class injection/management
+  - Works well with `yo-yo`, `bel` and `choo`
 
 ## About
 

@@ -76,7 +76,7 @@ const Wrapper = styled.div`
 `;
 
 document.body.appendChild(Wrapper()(
-  Header()('My header!'),
+  Header('My header!'),
   MyButton({ onclick: () => console.log('yay!') })(
     'Do Something'
   )
@@ -85,9 +85,10 @@ document.body.appendChild(Wrapper()(
 
 ## Features
 
-  - Super tiny **1.9kb** gzipped
+  - Super tiny **2.0kb** gzipped
   - Completely DOM based
   - Supports `@media`
+  - Supports `@keyframes` (via `keyframes` method)
   - Supports pseudo CSS (i.e. `&:hover`)
   - State can be fed in through primitive methods (i.e `props => ...`)
   - No dependencies
@@ -104,8 +105,6 @@ A special thanks to [Max Stoiber](https://twitter.com/mxstbr) and the `styled-co
 
 ## Usage with Props
 
-Usage with Props
-
 ```js
 import styled from 'styled-elements';
 
@@ -119,6 +118,31 @@ document.body.appendChild(Header({}, props)(
   'My Header'
 ));
 ```
+
+## With Keyframes
+
+```js
+import styled, { keyframes } from 'styled-elements';
+
+const boxmove = keyframes`
+  0%   {top: 0px;}
+  25%  {top: 200px;}
+  75%  {top: 50px}
+  100% {top: 100px;}
+`;
+
+const Box = styled.div`
+  background-color: lightcoral;
+  width: 100px;
+  height: 100px;
+  display: block;
+  position :relative;
+  animation: ${boxmove} 5s infinite;
+`;
+
+document.body.appendChild(Box());
+```
+
 
 ## Works well with `yo-yo`
 
@@ -139,7 +163,7 @@ const Header = styled(yo`
 
 document.body.appendChild(Wrapper()(
   yo`<div>
-    ${Header()()}
+    ${Header()}
 
     <hr />
 

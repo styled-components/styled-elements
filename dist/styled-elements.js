@@ -172,8 +172,8 @@ function joinTemplate(strings, keys, state) {
   return output;
 }
 
-function buildName(className) {
-  return 'class-' + className;
+function buildName(hash, isKeyframes) {
+  return isKeyframes ? 'animation-' + hash : 'class-' + hash;
 }
 
 function buildClass(className, rawCSS) {
@@ -246,7 +246,11 @@ function buildCSS(className, rawCSS) {
   return output;
 }
 
-function buildAndRenderCSS(strings, keys, state) {
+function buildKeyframes(hash, rawCSS) {
+  return '\n  @-webkit-keyframes ' + buildName(hash, true) + ' {\n    ' + rawCSS.trim() + '\n  }\n  @keyframes ' + buildName(hash, true) + ' {\n    ' + rawCSS.trim() + '\n  }';
+}
+
+function buildAndRenderCSS(strings, keys, state, isKeyframes) {
   var rawCSS = joinTemplate(strings, keys, state);
   var hash = (0, _hash.doHash)(rawCSS).toString(36);
 
@@ -260,7 +264,11 @@ function buildAndRenderCSS(strings, keys, state) {
   }
 
   if (!docCSS[hash]) {
-    docCSS[hash] = buildCSS(hash, rawCSS);
+    if (isKeyframes) {
+      docCSS[hash] = buildKeyframes(hash, rawCSS);
+    } else {
+      docCSS[hash] = buildCSS(hash, rawCSS);
+    }
 
     var renderedCSS = '';
     Object.keys(docCSS).forEach(function (classHash) {
@@ -269,50 +277,72 @@ function buildAndRenderCSS(strings, keys, state) {
     document.querySelector('#styles').innerHTML = renderedCSS;
   }
 
-  return buildName(hash);
+  return buildName(hash, isKeyframes);
+}
+
+function makeKeyframes(strings) {
+  for (var _len = arguments.length, keys = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    keys[_key - 1] = arguments[_key];
+  }
+
+  return buildAndRenderCSS(strings, keys, {}, true);
+}
+
+function appendChildren(children, el) {
+  children.forEach(function (child) {
+    if (typeof child === 'string') {
+      el.appendChild(document.createTextNode(child)); // eslint-disable-line
+    } else {
+      el.appendChild(child);
+    }
+  });
+
+  return el;
 }
 
 function makeElement(tag) {
   return function (strings) {
-    for (var _len = arguments.length, keys = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      keys[_key - 1] = arguments[_key];
+    for (var _len2 = arguments.length, keys = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+      keys[_key2 - 1] = arguments[_key2];
     }
 
-    return function (props, state) {
-      return function () {
-        for (var _len2 = arguments.length, children = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-          children[_key2] = arguments[_key2];
+    return function () {
+      for (var _len3 = arguments.length, props = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        props[_key3] = arguments[_key3];
+      }
+
+      var elProps = (props || [])[0] || {};
+      var overrideProps = props.length === 0 || typeof elProps === 'string' || elProps.tagName || elProps.nodeName;
+      var childMethod = function childMethod() {
+        for (var _len4 = arguments.length, children = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+          children[_key4] = arguments[_key4];
         }
 
         var el = document.createElement(tag); // eslint-disable-line
-        el.className = buildAndRenderCSS(strings, keys, state);
+        el.className = buildAndRenderCSS(strings, keys, props[1]);
 
-        Object.keys(props || {}).forEach(function (attr) {
-          if (attr.substr(0, 2) === 'on') {
-            el.addEventListener(attr.substr(2), props[attr]);
-          } else {
-            el.setAttribute(attr, props[attr]);
-          }
-        });
+        if (!overrideProps) {
+          Object.keys(elProps).forEach(function (attr) {
+            if (attr.substr(0, 2) === 'on') {
+              el.addEventListener(attr.substr(2), elProps[attr]);
+            } else {
+              el.setAttribute(attr, elProps[attr]);
+            }
+          });
+        }
 
-        children.forEach(function (child) {
-          if (typeof child === 'string') {
-            el.appendChild(document.createTextNode(child)); // eslint-disable-line
-          } else {
-            el.appendChild(child);
-          }
-        });
-
-        return el;
+        return appendChildren(children, el);
       };
+
+      return overrideProps ? childMethod.apply(undefined, props) : childMethod;
     };
   };
 }
 
 function styled(el) {
   return function (strings) {
-    for (var _len3 = arguments.length, keys = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-      keys[_key3 - 1] = arguments[_key3];
+    for (var _len5 = arguments.length, keys = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
+      keys[_key5 - 1] = arguments[_key5];
     }
 
     var className = buildAndRenderCSS(strings, keys, {});
@@ -345,6 +375,7 @@ styled.presets = {
 styled.tags.forEach(function (tag) {
   return styled[tag] = makeElement(tag);
 });
+styled.keyframes = makeKeyframes;
 
 /***/ }
 /******/ ])

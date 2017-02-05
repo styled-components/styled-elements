@@ -14,7 +14,6 @@
         border: 3px solid red;
         border-radius: ${3}px;
         background: #lightred;
-        cursor: pointer;
 
         &:hover {
           background: #555;
@@ -32,9 +31,26 @@
         }
       `;
 
-      document.body.appendChild(Wrapper()(
-        Header()('Hello'),
-        MyButton({ onclick: function() { console.log('Hello'); } })('Something')
+      var boxmove = styled.keyframes`
+        0%   {top: 0px;}
+        25%  {top: 200px;}
+        75%  {top: 50px}
+        100% {top: 100px;}
+      `;
+
+      var Box = styled.div`
+        background-color: lightcoral;
+        width: 100px;
+        height: 100px;
+        display: block;
+        position :relative;
+        animation: ${boxmove} 5s infinite;
+      `;
+
+      document.body.appendChild(Wrapper(
+        Header('Hello'),
+        MyButton({ onclick: function() { console.log('Hello'); } })('Something'),
+        Box()
       ));
     </script>
   </body>

@@ -22,8 +22,8 @@ function joinTemplate(strings, keys, state) {
   return output;
 }
 
-function buildName(className) {
-  return `class-${className}`;
+function buildName(hash, isKeyframes) {
+  return isKeyframes ? `animation-${hash}` : `class-${hash}`;
 }
 
 function buildClass(className, rawCSS) {
@@ -99,7 +99,17 @@ function buildCSS(className, rawCSS) {
   return output;
 }
 
-function buildAndRenderCSS(strings, keys, state) {
+function buildKeyframes(hash, rawCSS) {
+  return `
+  @-webkit-keyframes ${buildName(hash, true)} {
+    ${rawCSS.trim()}
+  }
+  @keyframes ${buildName(hash, true)} {
+    ${rawCSS.trim()}
+  }`;
+}
+
+function buildAndRenderCSS(strings, keys, state, isKeyframes) {
   const rawCSS = joinTemplate(strings, keys, state);
   const hash = doHash(rawCSS).toString(36);
 
@@ -115,38 +125,58 @@ function buildAndRenderCSS(strings, keys, state) {
   }
 
   if (!docCSS[hash]) {
-    docCSS[hash] = buildCSS(hash, rawCSS);
+    if (isKeyframes) {
+      docCSS[hash] = buildKeyframes(hash, rawCSS);
+    } else {
+      docCSS[hash] = buildCSS(hash, rawCSS);
+    }
 
     let renderedCSS = '';
     Object.keys(docCSS).forEach(classHash => (renderedCSS += docCSS[classHash]));
     document.querySelector('#styles').innerHTML = renderedCSS;
   }
 
-  return buildName(hash);
+  return buildName(hash, isKeyframes);
+}
+
+function makeKeyframes(strings, ...keys) {
+  return buildAndRenderCSS(strings, keys, {}, true);
+}
+
+function appendChildren(children, el) {
+  children.forEach((child) => {
+    if (typeof child === 'string') {
+      el.appendChild(document.createTextNode(child)); // eslint-disable-line
+    } else {
+      el.appendChild(child);
+    }
+  });
+
+  return el;
 }
 
 function makeElement(tag) {
-  return (strings, ...keys) => (props, state) => (...children) => {
-    const el = document.createElement(tag); // eslint-disable-line
-    el.className = buildAndRenderCSS(strings, keys, state);
+  return (strings, ...keys) => (...props) => {
+    const elProps = (props || [])[0] || {};
+    const overrideProps = (props.length === 0 || typeof elProps === 'string' || elProps.tagName || elProps.nodeName);
+    const childMethod = (...children) => {
+      const el = document.createElement(tag); // eslint-disable-line
+      el.className = buildAndRenderCSS(strings, keys, props[1]);
 
-    Object.keys(props || {}).forEach((attr) => {
-      if (attr.substr(0, 2) === 'on') {
-        el.addEventListener(attr.substr(2), props[attr]);
-      } else {
-        el.setAttribute(attr, props[attr]);
+      if (!overrideProps) {
+        Object.keys(elProps).forEach((attr) => {
+          if (attr.substr(0, 2) === 'on') {
+            el.addEventListener(attr.substr(2), elProps[attr]);
+          } else {
+            el.setAttribute(attr, elProps[attr]);
+          }
+        });
       }
-    });
 
-    children.forEach((child) => {
-      if (typeof child === 'string') {
-        el.appendChild(document.createTextNode(child)); // eslint-disable-line
-      } else {
-        el.appendChild(child);
-      }
-    });
+      return appendChildren(children, el);
+    };
 
-    return el;
+    return overrideProps ? childMethod(...props) : childMethod;
   };
 }
 
@@ -191,3 +221,4 @@ styled.presets = {
 };
 
 styled.tags.forEach(tag => (styled[tag] = makeElement(tag)));
+styled.keyframes = makeKeyframes;

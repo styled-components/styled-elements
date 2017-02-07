@@ -85,7 +85,7 @@ document.body.appendChild(Wrapper(
 
 ## Features
 
-  - Super tiny **2.0kb** gzipped
+  - Super tiny **2.1kb** gzipped
   - Completely DOM based
   - Supports `@media`
   - Supports `@keyframes` (via `keyframes` method)

@@ -3,6 +3,20 @@ import { doHash } from './lib/hash';
 let theme = {};
 let globalCSS = '';
 export const docCSS = {};
+export const dangerChars = [
+  /&/g,
+  /</g,
+  />/g,
+  /"/g,
+  /'/g,
+  // /\//g,
+];
+
+export function escapeChars(str) {
+  let output = String(str);
+  dangerChars.forEach(char => (output = output.replace(char, '')));
+  return output;
+}
 
 export function joinTemplate(strings, keys, state) {
   let output = '';
@@ -15,7 +29,7 @@ export function joinTemplate(strings, keys, state) {
         keyValue = keyValue(state || {});
       }
 
-      output += str + (keyValue || '');
+      output += str + escapeChars(keyValue || '');
     } else {
       output += str;
     }

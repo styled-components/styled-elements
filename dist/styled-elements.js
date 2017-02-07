@@ -146,7 +146,8 @@ function Umul32(n, m) {
 'use strict';
 
 exports.__esModule = true;
-exports.keyframes = exports.presets = exports.tags = exports.injectGlobal = exports.css = exports.setTheme = exports.docCSS = undefined;
+exports.keyframes = exports.presets = exports.tags = exports.injectGlobal = exports.css = exports.setTheme = exports.dangerChars = exports.docCSS = undefined;
+exports.escapeChars = escapeChars;
 exports.joinTemplate = joinTemplate;
 exports.buildName = buildName;
 exports.renderCSS = renderCSS;
@@ -157,6 +158,15 @@ var _hash = __webpack_require__(0);
 var theme = {};
 var globalCSS = '';
 var docCSS = exports.docCSS = {};
+var dangerChars = exports.dangerChars = [/&/g, /</g, />/g, /"/g, /'/g];
+
+function escapeChars(str) {
+  var output = String(str);
+  dangerChars.forEach(function (char) {
+    return output = output.replace(char, '');
+  });
+  return output;
+}
 
 function joinTemplate(strings, keys, state) {
   var output = '';
@@ -169,7 +179,7 @@ function joinTemplate(strings, keys, state) {
         keyValue = keyValue(state || {});
       }
 
-      output += str + (keyValue || '');
+      output += str + escapeChars(keyValue || '');
     } else {
       output += str;
     }

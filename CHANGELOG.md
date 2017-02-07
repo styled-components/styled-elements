@@ -1,3 +1,8 @@
+# 1.0.7 -- anti-xss prevention
+
+1. All key injected chars are now escaped (i.e. `<`, `>`, `&`, '"', "'")
+   - Note, while this does make injection less usable, it prevents a huge XSS attack vector
+
 # 1.0.6 -- fix exports
 
 1. Fix exports

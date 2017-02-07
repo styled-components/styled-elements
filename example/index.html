@@ -58,7 +58,9 @@
 
       document.body.appendChild(Wrapper(
         Header('Hello'),
-        MyButton({ onclick: function() { console.log('Hello'); } }, { cool: 'red' })('Something'),
+        MyButton({ onclick: function() { console.log('Hello'); } }, {
+          cool: '"red&',
+        })('Something'),
         Box()
       ));
     </script>

@@ -146,13 +146,17 @@ function Umul32(n, m) {
 'use strict';
 
 exports.__esModule = true;
+exports.keyframes = exports.presets = exports.tags = exports.injectGlobal = exports.css = exports.setTheme = exports.docCSS = undefined;
+exports.joinTemplate = joinTemplate;
+exports.buildName = buildName;
+exports.renderCSS = renderCSS;
 exports['default'] = styled;
 
 var _hash = __webpack_require__(0);
 
 var theme = {};
 var globalCSS = '';
-var docCSS = {};
+var docCSS = exports.docCSS = {};
 
 function joinTemplate(strings, keys, state) {
   var output = '';
@@ -257,7 +261,7 @@ function renderCSS() {
   Object.keys(docCSS).forEach(function (classHash) {
     return renderedCSS += docCSS[classHash];
   });
-  document.querySelector('#styles').innerHTML = '' + globalCSS + renderedCSS;
+  return '' + globalCSS + renderedCSS;
 }
 
 function buildAndRenderCSS(strings, keys, state, isKeyframes) {
@@ -280,7 +284,7 @@ function buildAndRenderCSS(strings, keys, state, isKeyframes) {
       docCSS[hash] = buildCSS(hash, rawCSS);
     }
 
-    renderCSS();
+    document.querySelector('#styles').innerHTML = renderCSS();
   }
 
   return buildName(hash, isKeyframes);
@@ -363,17 +367,17 @@ function styled(el) {
   };
 }
 
-styled.setTheme = function (selectedTheme) {
+var setTheme = exports.setTheme = styled.setTheme = function (selectedTheme) {
   return theme = Object.assign({}, selectedTheme);
 };
-styled.css = function (strings) {
+var css = exports.css = styled.css = function (strings) {
   for (var _len6 = arguments.length, keys = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
     keys[_key6 - 1] = arguments[_key6];
   }
 
   return buildAndRenderCSS(strings, keys, { theme: theme });
 };
-styled.injectGlobal = function (strings) {
+var injectGlobal = exports.injectGlobal = styled.injectGlobal = function (strings) {
   for (var _len7 = arguments.length, keys = Array(_len7 > 1 ? _len7 - 1 : 0), _key7 = 1; _key7 < _len7; _key7++) {
     keys[_key7 - 1] = arguments[_key7];
   }
@@ -381,9 +385,9 @@ styled.injectGlobal = function (strings) {
   globalCSS += joinTemplate(strings, keys, { theme: theme });
 };
 
-styled.tags = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'command', 'datalist', 'dd', 'del', 'details', 'dfn', 'div', 'dl', 'doctype', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr'];
+var tags = exports.tags = styled.tags = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'command', 'datalist', 'dd', 'del', 'details', 'dfn', 'div', 'dl', 'doctype', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr'];
 
-styled.presets = {
+var presets = exports.presets = styled.presets = {
   mobile: '(min-width: 400px)',
   Mobile: '@media (min-width: 400px)',
   phablet: '(min-width: 550px)',
@@ -399,7 +403,7 @@ styled.presets = {
 styled.tags.forEach(function (tag) {
   return styled[tag] = makeElement(tag);
 });
-styled.keyframes = makeKeyframes;
+var keyframes = exports.keyframes = styled.keyframes = makeKeyframes;
 
 /***/ }
 /******/ ])

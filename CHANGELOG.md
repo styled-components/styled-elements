@@ -1,3 +1,7 @@
+# 1.0.6 -- fix exports
+
+1. Fix exports
+
 # 1.0.5 -- themes, css, injectGlobal
 
 1. themes via (setTheme), makes globally available in state

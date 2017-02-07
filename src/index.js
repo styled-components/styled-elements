@@ -2,9 +2,9 @@ import { doHash } from './lib/hash';
 
 let theme = {};
 let globalCSS = '';
-const docCSS = {};
+export const docCSS = {};
 
-function joinTemplate(strings, keys, state) {
+export function joinTemplate(strings, keys, state) {
   let output = '';
 
   strings.forEach((str, index) => {
@@ -24,7 +24,7 @@ function joinTemplate(strings, keys, state) {
   return output;
 }
 
-function buildName(hash, isKeyframes) {
+export function buildName(hash, isKeyframes) {
   return isKeyframes ? `animation-${hash}` : `class-${hash}`;
 }
 
@@ -111,10 +111,10 @@ function buildKeyframes(hash, rawCSS) {
   }`;
 }
 
-function renderCSS() {
+export function renderCSS() {
   let renderedCSS = '';
   Object.keys(docCSS).forEach(classHash => (renderedCSS += docCSS[classHash]));
-  document.querySelector('#styles').innerHTML = `${globalCSS}${renderedCSS}`;
+  return `${globalCSS}${renderedCSS}`;
 }
 
 function buildAndRenderCSS(strings, keys, state, isKeyframes) {
@@ -139,7 +139,7 @@ function buildAndRenderCSS(strings, keys, state, isKeyframes) {
       docCSS[hash] = buildCSS(hash, rawCSS);
     }
 
-    renderCSS();
+    document.querySelector('#styles').innerHTML = renderCSS();
   }
 
   return buildName(hash, isKeyframes);
@@ -200,13 +200,13 @@ export default function styled(el) {
   };
 }
 
-styled.setTheme = selectedTheme => (theme = Object.assign({}, selectedTheme));
-styled.css = (strings, ...keys) => buildAndRenderCSS(strings, keys, { theme });
-styled.injectGlobal = (strings, ...keys) => {
+export const setTheme = styled.setTheme = selectedTheme => (theme = Object.assign({}, selectedTheme));
+export const css = styled.css = (strings, ...keys) => buildAndRenderCSS(strings, keys, { theme });
+export const injectGlobal = styled.injectGlobal = (strings, ...keys) => {
   globalCSS += joinTemplate(strings, keys, { theme });
 };
 
-styled.tags = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b',
+export const tags = styled.tags = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b',
 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption',
 'cite', 'code', 'col', 'colgroup', 'command', 'datalist', 'dd', 'del', 'details',
 'dfn', 'div', 'dl', 'doctype', 'dt', 'em', 'embed', 'fieldset', 'figcaption',
@@ -219,7 +219,7 @@ styled.tags = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b',
 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track',
 'u', 'ul', 'var', 'video', 'wbr'];
 
-styled.presets = {
+export const presets = styled.presets = {
   mobile: '(min-width: 400px)',
   Mobile: '@media (min-width: 400px)',
   phablet: '(min-width: 550px)',
@@ -233,4 +233,4 @@ styled.presets = {
 };
 
 styled.tags.forEach(tag => (styled[tag] = makeElement(tag)));
-styled.keyframes = makeKeyframes;
+export const keyframes = styled.keyframes = makeKeyframes;

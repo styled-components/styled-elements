@@ -1,5 +1,7 @@
 import { doHash } from './lib/hash';
 
+let theme = {};
+let globalCSS = '';
 const docCSS = {};
 
 function joinTemplate(strings, keys, state) {
@@ -109,6 +111,12 @@ function buildKeyframes(hash, rawCSS) {
   }`;
 }
 
+function renderCSS() {
+  let renderedCSS = '';
+  Object.keys(docCSS).forEach(classHash => (renderedCSS += docCSS[classHash]));
+  document.querySelector('#styles').innerHTML = `${globalCSS}${renderedCSS}`;
+}
+
 function buildAndRenderCSS(strings, keys, state, isKeyframes) {
   const rawCSS = joinTemplate(strings, keys, state);
   const hash = doHash(rawCSS).toString(36);
@@ -131,16 +139,14 @@ function buildAndRenderCSS(strings, keys, state, isKeyframes) {
       docCSS[hash] = buildCSS(hash, rawCSS);
     }
 
-    let renderedCSS = '';
-    Object.keys(docCSS).forEach(classHash => (renderedCSS += docCSS[classHash]));
-    document.querySelector('#styles').innerHTML = renderedCSS;
+    renderCSS();
   }
 
   return buildName(hash, isKeyframes);
 }
 
 function makeKeyframes(strings, ...keys) {
-  return buildAndRenderCSS(strings, keys, {}, true);
+  return buildAndRenderCSS(strings, keys, { theme }, true);
 }
 
 function appendChildren(children, el) {
@@ -161,7 +167,7 @@ function makeElement(tag) {
     const overrideProps = (props.length === 0 || typeof elProps === 'string' || elProps.tagName || elProps.nodeName);
     const childMethod = (...children) => {
       const el = document.createElement(tag); // eslint-disable-line
-      el.className = buildAndRenderCSS(strings, keys, props[1]);
+      el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme }, (props[1] || {})));
 
       if (!overrideProps) {
         Object.keys(elProps).forEach((attr) => {
@@ -182,7 +188,7 @@ function makeElement(tag) {
 
 export default function styled(el) {
   return (strings, ...keys) => {
-    const className = buildAndRenderCSS(strings, keys, {});
+    const className = buildAndRenderCSS(strings, keys, { theme });
 
     if (el.classList) {
       el.classList.add(className);
@@ -193,6 +199,12 @@ export default function styled(el) {
     return el;
   };
 }
+
+styled.setTheme = selectedTheme => (theme = Object.assign({}, selectedTheme));
+styled.css = (strings, ...keys) => buildAndRenderCSS(strings, keys, { theme });
+styled.injectGlobal = (strings, ...keys) => {
+  globalCSS += joinTemplate(strings, keys, { theme });
+};
 
 styled.tags = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b',
 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption',

@@ -5,18 +5,18 @@
       var styled = styled.default;
 
       var Header = styled.h2`
-        color: #333;
+        color: ${props => props.theme.main};
         margin-top: 0px;
       `;
 
       var MyButton = styled.button`
         padding: 10px;
-        border: 3px solid red;
+        border: 3px solid ${props => props.cool};
         border-radius: ${3}px;
         background: #lightred;
 
         &:hover {
-          background: #555;
+          background: ${props => props.theme.main};
         }
       `;
 
@@ -47,9 +47,18 @@
         animation: ${boxmove} 5s infinite;
       `;
 
+      styled.setTheme({ main: '#333' });
+
+      styled.injectGlobal`
+        body {
+          font-family: Arial;
+          font-size: 11px;
+        }
+      `;
+
       document.body.appendChild(Wrapper(
         Header('Hello'),
-        MyButton({ onclick: function() { console.log('Hello'); } })('Something'),
+        MyButton({ onclick: function() { console.log('Hello'); } }, { cool: 'red' })('Something'),
         Box()
       ));
     </script>

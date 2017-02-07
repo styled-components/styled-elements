@@ -150,6 +150,8 @@ exports['default'] = styled;
 
 var _hash = __webpack_require__(0);
 
+var theme = {};
+var globalCSS = '';
 var docCSS = {};
 
 function joinTemplate(strings, keys, state) {
@@ -250,6 +252,14 @@ function buildKeyframes(hash, rawCSS) {
   return '\n  @-webkit-keyframes ' + buildName(hash, true) + ' {\n    ' + rawCSS.trim() + '\n  }\n  @keyframes ' + buildName(hash, true) + ' {\n    ' + rawCSS.trim() + '\n  }';
 }
 
+function renderCSS() {
+  var renderedCSS = '';
+  Object.keys(docCSS).forEach(function (classHash) {
+    return renderedCSS += docCSS[classHash];
+  });
+  document.querySelector('#styles').innerHTML = '' + globalCSS + renderedCSS;
+}
+
 function buildAndRenderCSS(strings, keys, state, isKeyframes) {
   var rawCSS = joinTemplate(strings, keys, state);
   var hash = (0, _hash.doHash)(rawCSS).toString(36);
@@ -270,11 +280,7 @@ function buildAndRenderCSS(strings, keys, state, isKeyframes) {
       docCSS[hash] = buildCSS(hash, rawCSS);
     }
 
-    var renderedCSS = '';
-    Object.keys(docCSS).forEach(function (classHash) {
-      return renderedCSS += docCSS[classHash];
-    });
-    document.querySelector('#styles').innerHTML = renderedCSS;
+    renderCSS();
   }
 
   return buildName(hash, isKeyframes);
@@ -285,7 +291,7 @@ function makeKeyframes(strings) {
     keys[_key - 1] = arguments[_key];
   }
 
-  return buildAndRenderCSS(strings, keys, {}, true);
+  return buildAndRenderCSS(strings, keys, { theme: theme }, true);
 }
 
 function appendChildren(children, el) {
@@ -319,7 +325,7 @@ function makeElement(tag) {
         }
 
         var el = document.createElement(tag); // eslint-disable-line
-        el.className = buildAndRenderCSS(strings, keys, props[1]);
+        el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme: theme }, props[1] || {}));
 
         if (!overrideProps) {
           Object.keys(elProps).forEach(function (attr) {
@@ -345,7 +351,7 @@ function styled(el) {
       keys[_key5 - 1] = arguments[_key5];
     }
 
-    var className = buildAndRenderCSS(strings, keys, {});
+    var className = buildAndRenderCSS(strings, keys, { theme: theme });
 
     if (el.classList) {
       el.classList.add(className);
@@ -356,6 +362,24 @@ function styled(el) {
     return el;
   };
 }
+
+styled.setTheme = function (selectedTheme) {
+  return theme = Object.assign({}, selectedTheme);
+};
+styled.css = function (strings) {
+  for (var _len6 = arguments.length, keys = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
+    keys[_key6 - 1] = arguments[_key6];
+  }
+
+  return buildAndRenderCSS(strings, keys, { theme: theme });
+};
+styled.injectGlobal = function (strings) {
+  for (var _len7 = arguments.length, keys = Array(_len7 > 1 ? _len7 - 1 : 0), _key7 = 1; _key7 < _len7; _key7++) {
+    keys[_key7 - 1] = arguments[_key7];
+  }
+
+  globalCSS += joinTemplate(strings, keys, { theme: theme });
+};
 
 styled.tags = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'command', 'datalist', 'dd', 'del', 'details', 'dfn', 'div', 'dl', 'doctype', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr'];
 

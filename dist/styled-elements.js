@@ -176,10 +176,15 @@ function joinTemplate(strings, keys, state) {
       var keyValue = keys[index];
 
       if (typeof keyValue === 'function') {
-        keyValue = keyValue(state || {});
+        keyValue = escapeChars(keyValue(state || {}) || '');
       }
 
-      output += str + escapeChars(keyValue || '');
+      if (typeof keyValue === 'string' && docCSS[keyValue.replace('class-', '')]) {
+        var hash = keyValue.replace('class-', '');
+        keyValue = joinTemplate(docCSS[hash].strings, docCSS[hash].keys, state);
+      }
+
+      output += str + (keyValue || '');
     } else {
       output += str;
     }
@@ -269,7 +274,7 @@ function buildKeyframes(hash, rawCSS) {
 function renderCSS() {
   var renderedCSS = '';
   Object.keys(docCSS).forEach(function (classHash) {
-    return renderedCSS += docCSS[classHash];
+    return renderedCSS += docCSS[classHash].rendered;
   });
   return '' + globalCSS + renderedCSS;
 }
@@ -289,9 +294,9 @@ function buildAndRenderCSS(strings, keys, state, isKeyframes) {
 
   if (!docCSS[hash]) {
     if (isKeyframes) {
-      docCSS[hash] = buildKeyframes(hash, rawCSS);
+      docCSS[hash] = { rendered: buildKeyframes(hash, rawCSS), strings: strings, keys: keys };
     } else {
-      docCSS[hash] = buildCSS(hash, rawCSS);
+      docCSS[hash] = { rendered: buildCSS(hash, rawCSS), strings: strings, keys: keys };
     }
 
     document.querySelector('#styles').innerHTML = renderCSS();
@@ -310,8 +315,8 @@ function makeKeyframes(strings) {
 
 function appendChildren(children, el) {
   children.forEach(function (child) {
-    if (typeof child === 'string') {
-      el.appendChild(document.createTextNode(child)); // eslint-disable-line
+    if (typeof child === 'string' || typeof child === 'number') {
+      el.appendChild(document.createTextNode(String(child))); // eslint-disable-line
     } else {
       el.appendChild(child);
     }
@@ -320,6 +325,33 @@ function appendChildren(children, el) {
   return el;
 }
 
+/*
+function makeElement(tag) {
+  return (strings, ...keys) => (...props) => {
+    const elProps = (props || [])[0] || {};
+    const overrideProps = (props.length === 0 || typeof elProps === 'string' || elProps.tagName || elProps.nodeName);
+    const childMethod = (...children) => {
+      const el = document.createElement(tag); // eslint-disable-line
+      el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme }, (props[1] || {})));
+
+      if (!overrideProps) {
+        Object.keys(elProps).forEach((attr) => {
+          if (attr.substr(0, 2) === 'on') {
+            el.addEventListener(attr.substr(2), elProps[attr]);
+          } else {
+            el.setAttribute(attr, elProps[attr]);
+          }
+        });
+      }
+
+      return appendChildren(children, el);
+    };
+
+    return overrideProps ? childMethod(...props) : childMethod;
+  };
+}
+*/
+
 function makeElement(tag) {
   return function (strings) {
     for (var _len2 = arguments.length, keys = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
@@ -327,42 +359,40 @@ function makeElement(tag) {
     }
 
     return function () {
-      for (var _len3 = arguments.length, props = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-        props[_key3] = arguments[_key3];
+      for (var _len3 = arguments.length, inputChildren = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        inputChildren[_key3] = arguments[_key3];
       }
 
-      var elProps = (props || [])[0] || {};
-      var overrideProps = props.length === 0 || typeof elProps === 'string' || elProps.tagName || elProps.nodeName;
-      var childMethod = function childMethod() {
-        for (var _len4 = arguments.length, children = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-          children[_key4] = arguments[_key4];
+      var inputProps = inputChildren[0];
+      var notProps = typeof inputProps !== 'object' || Array.isArray(inputProps) || inputProps.length === 0 || inputProps.tagName && true || false || inputProps.nodeName && true || false;
+      var elProps = notProps ? {} : inputProps;
+      var props = elProps.props || {};
+      var children = (notProps ? inputChildren : inputChildren.slice(1)) || [];
+
+      if (Array.isArray(children[0])) {
+        children = children[0];
+      }
+
+      var el = document.createElement(tag); // eslint-disable-line
+      el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme: theme }, props));
+
+      Object.keys(elProps).forEach(function (attr) {
+        if (attr.substr(0, 2) === 'on') {
+          el.addEventListener(attr.substr(2), elProps[attr]);
+        } else if (attr !== 'props' || attr !== 'children') {
+          el.setAttribute(attr, elProps[attr]);
         }
+      });
 
-        var el = document.createElement(tag); // eslint-disable-line
-        el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme: theme }, props[1] || {}));
-
-        if (!overrideProps) {
-          Object.keys(elProps).forEach(function (attr) {
-            if (attr.substr(0, 2) === 'on') {
-              el.addEventListener(attr.substr(2), elProps[attr]);
-            } else {
-              el.setAttribute(attr, elProps[attr]);
-            }
-          });
-        }
-
-        return appendChildren(children, el);
-      };
-
-      return overrideProps ? childMethod.apply(undefined, props) : childMethod;
+      return appendChildren(children, el);
     };
   };
 }
 
 function styled(el) {
   return function (strings) {
-    for (var _len5 = arguments.length, keys = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
-      keys[_key5 - 1] = arguments[_key5];
+    for (var _len4 = arguments.length, keys = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
+      keys[_key4 - 1] = arguments[_key4];
     }
 
     var className = buildAndRenderCSS(strings, keys, { theme: theme });
@@ -381,15 +411,15 @@ var setTheme = exports.setTheme = styled.setTheme = function (selectedTheme) {
   return theme = Object.assign({}, selectedTheme);
 };
 var css = exports.css = styled.css = function (strings) {
-  for (var _len6 = arguments.length, keys = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
-    keys[_key6 - 1] = arguments[_key6];
+  for (var _len5 = arguments.length, keys = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
+    keys[_key5 - 1] = arguments[_key5];
   }
 
   return buildAndRenderCSS(strings, keys, { theme: theme });
 };
 var injectGlobal = exports.injectGlobal = styled.injectGlobal = function (strings) {
-  for (var _len7 = arguments.length, keys = Array(_len7 > 1 ? _len7 - 1 : 0), _key7 = 1; _key7 < _len7; _key7++) {
-    keys[_key7 - 1] = arguments[_key7];
+  for (var _len6 = arguments.length, keys = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
+    keys[_key6 - 1] = arguments[_key6];
   }
 
   globalCSS += joinTemplate(strings, keys, { theme: theme });

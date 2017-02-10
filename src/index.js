@@ -26,10 +26,15 @@ export function joinTemplate(strings, keys, state) {
       let keyValue = keys[index];
 
       if (typeof keyValue === 'function') {
-        keyValue = keyValue(state || {});
+        keyValue = escapeChars(keyValue(state || {}) || '');
       }
 
-      output += str + escapeChars(keyValue || '');
+      if (typeof keyValue === 'string' && docCSS[keyValue.replace('class-', '')]) {
+        const hash = keyValue.replace('class-', '');
+        keyValue = joinTemplate(docCSS[hash].strings, docCSS[hash].keys, state);
+      }
+
+      output += str + (keyValue || '');
     } else {
       output += str;
     }
@@ -127,7 +132,7 @@ function buildKeyframes(hash, rawCSS) {
 
 export function renderCSS() {
   let renderedCSS = '';
-  Object.keys(docCSS).forEach(classHash => (renderedCSS += docCSS[classHash]));
+  Object.keys(docCSS).forEach(classHash => (renderedCSS += docCSS[classHash].rendered));
   return `${globalCSS}${renderedCSS}`;
 }
 
@@ -148,9 +153,9 @@ function buildAndRenderCSS(strings, keys, state, isKeyframes) {
 
   if (!docCSS[hash]) {
     if (isKeyframes) {
-      docCSS[hash] = buildKeyframes(hash, rawCSS);
+      docCSS[hash] = { rendered: buildKeyframes(hash, rawCSS), strings, keys };
     } else {
-      docCSS[hash] = buildCSS(hash, rawCSS);
+      docCSS[hash] = { rendered: buildCSS(hash, rawCSS), strings, keys };
     }
 
     document.querySelector('#styles').innerHTML = renderCSS();
@@ -165,8 +170,8 @@ function makeKeyframes(strings, ...keys) {
 
 function appendChildren(children, el) {
   children.forEach((child) => {
-    if (typeof child === 'string') {
-      el.appendChild(document.createTextNode(child)); // eslint-disable-line
+    if (typeof child === 'string' || typeof child === 'number') {
+      el.appendChild(document.createTextNode(String(child))); // eslint-disable-line
     } else {
       el.appendChild(child);
     }
@@ -175,6 +180,7 @@ function appendChildren(children, el) {
   return el;
 }
 
+/*
 function makeElement(tag) {
   return (strings, ...keys) => (...props) => {
     const elProps = (props || [])[0] || {};
@@ -197,6 +203,38 @@ function makeElement(tag) {
     };
 
     return overrideProps ? childMethod(...props) : childMethod;
+  };
+}
+*/
+
+function makeElement(tag) {
+  return (strings, ...keys) => (...inputChildren) => {
+    const inputProps = inputChildren[0];
+    const notProps = (typeof inputProps !== 'object'
+      || Array.isArray(inputProps)
+      || inputProps.length === 0
+      || (inputProps.tagName && true || false)
+      || (inputProps.nodeName && true || false));
+    const elProps = notProps ? {} : inputProps;
+    const props = elProps.props || {};
+    let children = (notProps ? inputChildren : inputChildren.slice(1)) || [];
+
+    if (Array.isArray(children[0])) {
+      children = children[0];
+    }
+
+    const el = document.createElement(tag); // eslint-disable-line
+    el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme }, props));
+
+    Object.keys(elProps).forEach((attr) => {
+      if (attr.substr(0, 2) === 'on') {
+        el.addEventListener(attr.substr(2), elProps[attr]);
+      } else if (attr !== 'props' || attr !== 'children') {
+        el.setAttribute(attr, elProps[attr]);
+      }
+    });
+
+    return appendChildren(children, el);
   };
 }
 

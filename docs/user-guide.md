@@ -39,7 +39,7 @@ const Wrapper = styled.div`
 
 document.body.appendChild(Wrapper(
   Header('My header!'),
-  MyButton({ onclick: () => console.log('yay!') })(
+  MyButton({ onclick: () => console.log('yay!') },
     'Do Something'
   ),
 ));
@@ -56,7 +56,58 @@ const Header = styled.h2`
 
 const props = { status: 'success' };
 
-document.body.appendChild(Header({}, props)(
+document.body.appendChild(Header({ props },
+  'My Header'
+));
+```
+
+## Usage with Themes
+
+Note, themes (i.e. props.theme) are globally provided accross all modules.
+
+```js
+import styled, { setTheme } from 'styled-elements';
+
+setTheme({
+  color: 'red',
+});
+
+const Header = styled.h2`
+  color: #${props => props.status === 'success' ? props.theme.color : '333'};
+`;
+
+const props = { status: 'success' };
+
+document.body.appendChild(Header({ props },
+  'My Header'
+));
+```
+
+## Usage with Injection
+
+Note, injection should only be used once.
+
+```js
+import styled, { setTheme, injectGlobal } from 'styled-elements';
+
+setTheme({
+  color: 'red',
+});
+
+injectGlobal`
+  body {
+    font-family: Arial;
+    padding: 100px;
+  }
+`;
+
+const Header = styled.h2`
+  color: #${props => props.status === 'success' ? props.theme.color : '333'};
+`;
+
+const props = { status: 'success' };
+
+document.body.appendChild(Header({ props },
   'My Header'
 ));
 ```

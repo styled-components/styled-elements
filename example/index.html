@@ -5,13 +5,13 @@
       var styled = styled.default;
 
       var Header = styled.h2`
-        color: ${props => props.theme.main};
+        color: ${props => props.color || props.theme.main};
         margin-top: 0px;
       `;
 
       var MyButton = styled.button`
-        padding: 10px;
-        border: 3px solid ${props => props.cool};
+        ${props => props.theme.button}
+        border: 3px solid ${props => props.color};
         border-radius: ${3}px;
         background: #lightred;
 
@@ -47,7 +47,14 @@
         animation: ${boxmove} 5s infinite;
       `;
 
-      styled.setTheme({ main: '#333' });
+      styled.setTheme({
+        main: '#333',
+        button: styled.css`
+          padding: 20px;
+          line-height: 20px;
+          color: ${props => props.cool};
+        `
+      });
 
       styled.injectGlobal`
         body {
@@ -57,11 +64,17 @@
       `;
 
       document.body.appendChild(Wrapper(
-        Header('Hello'),
-        MyButton({ onclick: function() { console.log('Hello'); } }, {
-          cool: '"red&',
-        })('Something'),
-        Box()
+        Header(),
+        Header({ props: { color: 'purple' }}),
+        Header('Header 1'),
+        Header(['Header ', '2']),
+        Header('Header ', '3'),
+        Header({ props: { color: 'blue' }}, 'Header ', '4'),
+        Header({ props: { color: 'green' }}, ['Header ', '5']),
+        MyButton({ onclick: function() { console.log('Hello'); }, props: { color: 'red' } },
+          'Something'
+        ),
+        Box(['cool'])
       ));
     </script>
   </body>

@@ -77,8 +77,9 @@ const Wrapper = styled.div`
 
 document.body.appendChild(Wrapper(
   Header('My header!'),
-  MyButton({ onclick: () => console.log('yay!') })(
-    'Do Something'
+  MyButton({ onclick: () => console.log('yay!') },
+    'Do Something',
+    'Say Something Else'
   )
 ));
 ```
@@ -114,7 +115,7 @@ const Header = styled.h2`
 
 const props = { status: 'success' };
 
-document.body.appendChild(Header({}, props)(
+document.body.appendChild(Header({ props },
   'My Header'
 ));
 ```
@@ -161,7 +162,7 @@ const Header = styled(yo`
   color: #333;
 `;
 
-document.body.appendChild(Wrapper()(
+document.body.appendChild(Wrapper(
   yo`<div>
     ${Header()}
 
@@ -170,7 +171,7 @@ document.body.appendChild(Wrapper()(
     <button onclick=${() => console.log('hello!')}>
       Some Button
     </button>
-  </div>`,
+  </div>`
 ));
 ```
 

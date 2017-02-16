@@ -172,6 +172,8 @@ function appendChildren(children, el) {
   children.forEach((child) => {
     if (typeof child === 'string' || typeof child === 'number') {
       el.appendChild(document.createTextNode(String(child))); // eslint-disable-line
+    } else if (Array.isArray(child)) {
+      appendChildren(child, el);
     } else {
       el.appendChild(child);
     }
@@ -179,33 +181,6 @@ function appendChildren(children, el) {
 
   return el;
 }
-
-/*
-function makeElement(tag) {
-  return (strings, ...keys) => (...props) => {
-    const elProps = (props || [])[0] || {};
-    const overrideProps = (props.length === 0 || typeof elProps === 'string' || elProps.tagName || elProps.nodeName);
-    const childMethod = (...children) => {
-      const el = document.createElement(tag); // eslint-disable-line
-      el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme }, (props[1] || {})));
-
-      if (!overrideProps) {
-        Object.keys(elProps).forEach((attr) => {
-          if (attr.substr(0, 2) === 'on') {
-            el.addEventListener(attr.substr(2), elProps[attr]);
-          } else {
-            el.setAttribute(attr, elProps[attr]);
-          }
-        });
-      }
-
-      return appendChildren(children, el);
-    };
-
-    return overrideProps ? childMethod(...props) : childMethod;
-  };
-}
-*/
 
 function makeElement(tag) {
   return (strings, ...keys) => (...inputChildren) => {
@@ -216,7 +191,6 @@ function makeElement(tag) {
       || (inputProps.tagName && true || false)
       || (inputProps.nodeName && true || false));
     const elProps = notProps ? {} : inputProps;
-    const props = elProps.props || {};
     let children = (notProps ? inputChildren : inputChildren.slice(1)) || [];
 
     if (Array.isArray(children[0])) {
@@ -224,12 +198,12 @@ function makeElement(tag) {
     }
 
     const el = document.createElement(tag); // eslint-disable-line
-    el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme }, props));
+    el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme }, elProps));
 
     Object.keys(elProps).forEach((attr) => {
       if (attr.substr(0, 2) === 'on') {
         el.addEventListener(attr.substr(2), elProps[attr]);
-      } else if (attr !== 'props' || attr !== 'children') {
+      } else if (attr !== 'props' && attr !== 'children') {
         el.setAttribute(attr, elProps[attr]);
       }
     });

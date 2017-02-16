@@ -113,9 +113,7 @@ const Header = styled.h2`
   color: #${props => props.status === 'success' ? '000' : '333'};
 `;
 
-const props = { status: 'success' };
-
-document.body.appendChild(Header({ props },
+document.body.appendChild(Header({ status: 'success' },
   'My Header'
 ));
 ```

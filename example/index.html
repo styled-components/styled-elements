@@ -65,13 +65,13 @@
 
       document.body.appendChild(Wrapper(
         Header(),
-        Header({ props: { color: 'purple' }}),
+        Header({ color: 'purple' }),
         Header('Header 1'),
         Header(['Header ', '2']),
         Header('Header ', '3'),
-        Header({ props: { color: 'blue' }}, 'Header ', '4'),
-        Header({ props: { color: 'green' }}, ['Header ', '5']),
-        MyButton({ onclick: function() { console.log('Hello'); }, props: { color: 'red' } },
+        Header({ color: 'blue' }, 'Header ', '4'),
+        Header({ color: 'green' }, ['Header ', '5']),
+        MyButton({ onclick: function() { console.log('Hello'); }, color: 'red' },
           'Something'
         ),
         Box(['cool'])

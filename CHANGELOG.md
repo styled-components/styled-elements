@@ -1,3 +1,12 @@
+# 1.0.13 -- simplify props
+
+1. No seperate props property, props are now element props
+
+# 1.0.12 -- subChild, recursive
+
+1. Allow for subchld support (better handling)
+2. Minor fix
+
 # 1.0.9 -- breaking notation change
 
 1. BREAKING, props and child notation now simplified

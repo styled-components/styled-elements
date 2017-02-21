@@ -69,9 +69,9 @@
         Header('Header 1'),
         Header(['Header ', '2']),
         Header('Header ', '3'),
-        Header({ color: 'blue' }, 'Header ', '4'),
-        Header({ color: 'green' }, ['Header ', '5']),
-        MyButton({ onclick: function() { console.log('Hello'); }, color: 'red' },
+        Header({ props: {color: 'blue'} }, 'Header ', '4'),
+        Header({ props: {color: 'green'} }, ['Header ', '5']),
+        MyButton({ onclick: function() { console.log('Hello'); }, props: {color: 'red'} },
           'Something'
         ),
         Box(['cool'])

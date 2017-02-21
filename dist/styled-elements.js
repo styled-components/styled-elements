@@ -341,6 +341,7 @@ function makeElement(tag) {
       var inputProps = inputChildren[0];
       var notProps = typeof inputProps !== 'object' || Array.isArray(inputProps) || inputProps.length === 0 || inputProps.tagName && true || false || inputProps.nodeName && true || false;
       var elProps = notProps ? {} : inputProps;
+      var specifiedProps = elProps.props || {};
       var children = (notProps ? inputChildren : inputChildren.slice(1)) || [];
 
       if (Array.isArray(children[0])) {
@@ -348,7 +349,7 @@ function makeElement(tag) {
       }
 
       var el = document.createElement(tag); // eslint-disable-line
-      el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme: theme }, elProps));
+      el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme: theme }, elProps, specifiedProps));
 
       Object.keys(elProps).forEach(function (attr) {
         if (attr.substr(0, 2) === 'on') {

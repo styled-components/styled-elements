@@ -1,3 +1,7 @@
+# 1.0.14 -- added specified props
+
+1. Added specified props back in.
+
 # 1.0.13 -- simplify props
 
 1. No seperate props property, props are now element props

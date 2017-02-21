@@ -191,6 +191,7 @@ function makeElement(tag) {
       || (inputProps.tagName && true || false)
       || (inputProps.nodeName && true || false));
     const elProps = notProps ? {} : inputProps;
+    const specifiedProps = elProps.props || {};
     let children = (notProps ? inputChildren : inputChildren.slice(1)) || [];
 
     if (Array.isArray(children[0])) {
@@ -198,7 +199,7 @@ function makeElement(tag) {
     }
 
     const el = document.createElement(tag); // eslint-disable-line
-    el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme }, elProps));
+    el.className = buildAndRenderCSS(strings, keys, Object.assign({}, { theme }, elProps, specifiedProps));
 
     Object.keys(elProps).forEach((attr) => {
       if (attr.substr(0, 2) === 'on') {

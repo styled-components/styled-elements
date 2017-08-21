@@ -154,7 +154,7 @@ const Wrapper = styled.div`
   background: #F1F1F1;
 `;
 
-const Header = styled(yo`
+const Header = () => styled(yo`
   <header>A Header</header>
 `)`
   color: #333;

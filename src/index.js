@@ -18,6 +18,57 @@ export function escapeChars(str) {
   return output;
 }
 
+function isPlainObject(x) {
+  return typeof x === 'object' && x.constructor === Object;
+}
+
+export function objToCSS(obj, prevKey) {
+  const css = Object.keys(obj)
+    .map(key => {
+      if (isPlainObject(obj[key])) {
+        return objToCSS(obj[key], key);
+      }
+
+      return `${hyphenateStyleName(key)}: ${obj[key]};`;
+    })
+    .join(' ');
+
+  return prevKey ? (
+    `${prevKey} {
+  ${css}
+}`
+  ) : (
+    css
+  );
+}
+
+export function hyphenateStyleName(string) {
+  return string
+    .replace(/([A-Z])/g, '-$1')
+    .toLowerCase()
+    .replace(/^ms-/, '-ms-');
+}
+
+export function flattenStyleObject(chunk) {
+  if (Array.isArray(chunk)) {
+    const ruleSet = [];
+
+    for (let i = 0, len = chunk.length, result; i < len; i += 1) {
+      result = flattenStyleObject(chunk[i]);
+
+      if (Array.isArray(result)) {
+        ruleSet.push(...result);
+      } else {
+        ruleSet.push(result);
+      }
+    }
+
+    return ruleSet;
+  }
+
+  return isPlainObject(chunk) ? objToCSS(chunk) : chunk.toString();
+}
+
 export function joinTemplate(strings, keys, state) {
   let output = '';
 
@@ -26,7 +77,13 @@ export function joinTemplate(strings, keys, state) {
       let keyValue = keys[index];
 
       if (typeof keyValue === 'function') {
-        keyValue = escapeChars(keyValue(state || {}) || '');
+        keyValue = flattenStyleObject(keyValue(state || {}));
+
+        if (Array.isArray(keyValue)) {
+          keyValue = keyValue.join(' ');
+        }
+
+        keyValue = escapeChars(keyValue || '');
       }
 
       if (typeof keyValue === 'string' && docCSS[keyValue.replace('class-', '')]) {

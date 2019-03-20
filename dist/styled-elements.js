@@ -12,41 +12,41 @@
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
 /******/ 			l: false,
 /******/ 			exports: {}
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.l = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// identity function for calling harmory imports with the correct context
 /******/ 	__webpack_require__.i = function(value) { return value; };
-
+/******/
 /******/ 	// define getter function for harmory exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		Object.defineProperty(exports, name, {
@@ -55,13 +55,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 			get: getter
 /******/ 		});
 /******/ 	};
-
+/******/
 /******/ 	// Object.prototype.hasOwnProperty.call
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
@@ -148,6 +148,9 @@ function Umul32(n, m) {
 exports.__esModule = true;
 exports.keyframes = exports.presets = exports.tags = exports.injectGlobal = exports.css = exports.setTheme = exports.dangerChars = exports.docCSS = undefined;
 exports.escapeChars = escapeChars;
+exports.objToCSS = objToCSS;
+exports.hyphenateStyleName = hyphenateStyleName;
+exports.flattenStyleObject = flattenStyleObject;
 exports.joinTemplate = joinTemplate;
 exports.buildName = buildName;
 exports.renderCSS = renderCSS;
@@ -168,6 +171,46 @@ function escapeChars(str) {
   return output;
 }
 
+function isPlainObject(x) {
+  return typeof x === 'object' && x.constructor === Object;
+}
+
+function objToCSS(obj, prevKey) {
+  var css = Object.keys(obj).map(function (key) {
+    if (isPlainObject(obj[key])) {
+      return objToCSS(obj[key], key);
+    }
+
+    return hyphenateStyleName(key) + ': ' + obj[key] + ';';
+  }).join(' ');
+
+  return prevKey ? prevKey + ' {\n  ' + css + '\n}' : css;
+}
+
+function hyphenateStyleName(string) {
+  return string.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^ms-/, '-ms-');
+}
+
+function flattenStyleObject(chunk) {
+  if (Array.isArray(chunk)) {
+    var ruleSet = [];
+
+    for (var i = 0, len = chunk.length, result; i < len; i += 1) {
+      result = flattenStyleObject(chunk[i]);
+
+      if (Array.isArray(result)) {
+        ruleSet.push.apply(ruleSet, result);
+      } else {
+        ruleSet.push(result);
+      }
+    }
+
+    return ruleSet;
+  }
+
+  return isPlainObject(chunk) ? objToCSS(chunk) : chunk.toString();
+}
+
 function joinTemplate(strings, keys, state) {
   var output = '';
 
@@ -176,7 +219,13 @@ function joinTemplate(strings, keys, state) {
       var keyValue = keys[index];
 
       if (typeof keyValue === 'function') {
-        keyValue = escapeChars(keyValue(state || {}) || '');
+        keyValue = flattenStyleObject(keyValue(state || {}));
+
+        if (Array.isArray(keyValue)) {
+          keyValue = keyValue.join(' ');
+        }
+
+        keyValue = escapeChars(keyValue || '');
       }
 
       if (typeof keyValue === 'string' && docCSS[keyValue.replace('class-', '')]) {
@@ -289,7 +338,8 @@ function buildAndRenderCSS(strings, keys, state, isKeyframes) {
     styleEl.id = 'styles';
 
     document.head.insertBefore( // eslint-disable-line
-    styleEl, document.head.firstChild);
+    styleEl, document.head.firstChild // eslint-disable-line
+    );
   }
 
   if (!docCSS[hash]) {

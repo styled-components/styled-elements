@@ -83,7 +83,7 @@ export function joinTemplate(strings, keys, state) {
           keyValue = keyValue.join(' ');
         }
 
-        keyValue = escapeChars(keyValue);
+        keyValue = escapeChars(keyValue || '');
       }
 
       if (typeof keyValue === 'string' && docCSS[keyValue.replace('class-', '')]) {

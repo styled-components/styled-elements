@@ -148,6 +148,9 @@ function Umul32(n, m) {
 exports.__esModule = true;
 exports.keyframes = exports.presets = exports.tags = exports.injectGlobal = exports.css = exports.setTheme = exports.dangerChars = exports.docCSS = undefined;
 exports.escapeChars = escapeChars;
+exports.objToCSS = objToCSS;
+exports.hyphenateStyleName = hyphenateStyleName;
+exports.flattenStyleObject = flattenStyleObject;
 exports.joinTemplate = joinTemplate;
 exports.buildName = buildName;
 exports.renderCSS = renderCSS;
@@ -222,7 +225,7 @@ function joinTemplate(strings, keys, state) {
           keyValue = keyValue.join(' ');
         }
 
-        keyValue = escapeChars(keyValue);
+        keyValue = escapeChars(keyValue || '');
       }
 
       if (typeof keyValue === 'string' && docCSS[keyValue.replace('class-', '')]) {
